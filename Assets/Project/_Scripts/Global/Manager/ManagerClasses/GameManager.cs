@@ -9,6 +9,6 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
   {
     public delegate void OnGameStarted();
     public static OnGameStarted OnGameStartedHandler;
-    private void Start() => OnGameStartedHandler();
+    public void Start() => OnGameStartedHandler();
   }
 }

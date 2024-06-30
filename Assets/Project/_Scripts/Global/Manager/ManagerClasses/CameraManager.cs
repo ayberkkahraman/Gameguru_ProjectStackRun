@@ -51,16 +51,18 @@ public class CameraManager : MonoBehaviour
             CurrentCamera = CharacterCamera;
             CinemachineBasicMultiChannelPerlin = DefaultCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
-            GameManagerData.OnLevelFailedHandler += () =>
+            GameManagerData.OnLevelFailHandler += () => UpdateFollowTarget(null);
+            GameManagerData.OnLevelFailHandler += () =>
             {
                 ShakeCamera(4.5f, .35f, .1f);
             };
+            
         }
 
         private void DeInit()
         {
-            
-            GameManagerData.OnLevelFailedHandler -= () =>
+            GameManagerData.OnLevelFailHandler -= () => UpdateFollowTarget(null);
+            GameManagerData.OnLevelFailHandler -= () =>
             {
                 ShakeCamera(8f, 1f, .075f);
             };

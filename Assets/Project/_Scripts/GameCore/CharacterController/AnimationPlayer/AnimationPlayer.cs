@@ -22,8 +22,8 @@ namespace Project._Scripts.GameCore.CharacterController.AnimationPlayer
 
     #region Initialization /DeInitialization
     private void InitializeComponents() => _animator = GetComponent<Animator>();
-    private void InitializeDelegates() => GameManagerData.OnLevelCompletedHandler += PlayDanceAnimation;
-    private void DeInitializeDelegates() => GameManagerData.OnLevelCompletedHandler -= PlayDanceAnimation;
+    private void InitializeDelegates() => GameManagerData.OnLevelSuccessHandler += PlayDanceAnimation;
+    private void DeInitializeDelegates() => GameManagerData.OnLevelSuccessHandler -= PlayDanceAnimation;
     #endregion
 
     #region Animation Behaviours

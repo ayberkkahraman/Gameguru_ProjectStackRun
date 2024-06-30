@@ -22,7 +22,7 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Elements
     {
       base.StartInteraction();
       
-      GameManagerData.OnLevelCompletedHandler();
+      GameManagerData.OnLevelSuccessHandler();
 
       // _rotator.transform.position = new Vector3(_cameraManager.CharacterCamera.Follow.position.x, transform.position.y, transform.position.z);
       _rotator.transform.parent = _cameraManager.CharacterCamera.Follow;

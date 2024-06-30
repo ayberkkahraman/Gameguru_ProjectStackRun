@@ -41,13 +41,13 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     private void InitializeDelegates()
     {
       PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
-      GameManagerData.OnLevelCompletedHandler += () => CanMove = false;
+      GameManagerData.OnLevelSuccessHandler += () => CanMove = false;
       GameManager.OnGameStartedHandler += () => CanMove = true;
     }
     private void DeInitializeDelegates()
     {
       PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
-      GameManagerData.OnLevelCompletedHandler -= () => CanMove = false;
+      GameManagerData.OnLevelSuccessHandler -= () => CanMove = false;
       GameManager.OnGameStartedHandler -= () => CanMove = true;
     }
 

@@ -70,7 +70,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       OnPlatformSnappedHandler += CheckSnappedPlatforms;
       OnPlatformSnappedHandler += (_) => PlayAudio();
 
-      GameManagerData.OnLevelCompletedHandler += () => Destroy(this);
+      GameManagerData.OnLevelSuccessHandler += () => Destroy(this);
     }
 
     private void DeInitialize()
@@ -80,7 +80,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       
       OnPlatformSpawnedHandler -= SpawnPlatform;
       
-      GameManagerData.OnLevelCompletedHandler -= () => Destroy(this);
+      GameManagerData.OnLevelSuccessHandler -= () => Destroy(this);
     }
     #endregion
 

@@ -10,19 +10,21 @@ namespace Project._Scripts.Global.ScriptableObjects
     public delegate void OnLevelFailed();
     public delegate void OnLevelCompleted();
     public delegate void OnGameStarted();
+    public delegate void OnGameEnded(bool success);
     public delegate void OnCharacterRestricted();
 
-    public static OnLevelFailed OnLevelFailedHandler;
-    public static OnLevelCompleted OnLevelCompletedHandler;
+    public static OnLevelFailed OnLevelFailHandler;
+    public static OnLevelCompleted OnLevelSuccessHandler;
     public static OnGameStarted OnGameStartedHandler;
     public static OnCharacterRestricted OnCharacterRestrictedHandler;
-
+    
+    
     
     public static void CleanUp()
     {
       GameState = State.Running;
-      OnLevelFailedHandler = null;
-      OnLevelCompletedHandler = null;
+      OnLevelFailHandler = null;
+      OnLevelSuccessHandler = null;
       OnGameStartedHandler = null;
       OnCharacterRestrictedHandler = null;
     }
