@@ -7,6 +7,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.ScriptableObjects
   public class PlatformControllerData : ScriptableObject
   {
     public Platform PlatformPrefab;
+    [Range(1, 10)]public int SnapCombo = 3;
     [Space]
     [Header("Attributes")]
     [Range(0f, 2f)] public float SnapTolerance = .1f;

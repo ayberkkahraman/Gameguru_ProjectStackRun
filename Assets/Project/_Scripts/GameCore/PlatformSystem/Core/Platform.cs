@@ -6,31 +6,24 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
 {
   public class Platform : MonoBehaviour
   {
-    private Rigidbody _rigidbody;
-    private BoxCollider _boxCollider;
-    
+    #region Fields
     [Range(1f,5f)]public float TransitionDuration = 2f;
-    public Tweener TransitionTween;
+    public Tweener TransitionTween { get; set; }
 
     private float _scaleAmount;
-    private void Start()
+    #endregion
+
+    #region Unity Functions
+    private void Start() => RunPlatform();
+    #endregion
+
+    #region Platform Behaviour
+    public void RunPlatform()
     {
       TransitionTween = transform.DOMoveX(-transform.position.x, TransitionDuration)
         .SetEase(Ease.Linear)
-        .SetLoops(-2, LoopType.Yoyo);
-    }
-
-    public void SnapPlatform()
-    {
-      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, PlatformController.SPlatformControllerData.SnapDuration)
-        .SetEase(PlatformController.SPlatformControllerData.SnapCurve);
-      PlatformController.OnPlatformSnappedHandler(this);
-    }
-
-    public void RescalePlatform(float distance)
-    {
-      transform.localScale = new Vector3(transform.localScale.x - Mathf.Abs(distance), transform.localScale.y, transform.localScale.z);
-      transform.position = new Vector3(transform.position.x - (distance / 2), transform.position.y, transform.position.z);
+        .SetLoops(-2, LoopType.Yoyo)
+        .OnKill(KillPlatform);
     }
     
     public void KillPlatform()
@@ -49,11 +42,23 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
         SpawnDropCube(distance);
       }
       
-      PlatformController.OnPlatformSpawnedHandler(GetScaleAmount());
+      PlatformController.OnPlatformSpawnedHandler(PlatformController.IsComboActive ? GetScaleAmount() : 0f);
     }
-
-    private float GetDistanceFromPlatform() => transform.position.x - PlatformController.PreviousPlatform.transform.position.x;
-
+    
+    public void SnapPlatform()
+    {
+      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, PlatformController.SPlatformControllerData.SnapDuration)
+        .SetEase(PlatformController.SPlatformControllerData.SnapCurve);
+      
+      PlatformController.OnPlatformSnappedHandler(this);
+    }
+    
+    public void RescalePlatform(float distance)
+    {
+      transform.localScale = new Vector3(transform.localScale.x - Mathf.Abs(distance), transform.localScale.y, transform.localScale.z);
+      transform.position = new Vector3(transform.position.x - (distance / 2), transform.position.y, transform.position.z);
+    }
+    
     private void SpawnDropCube(float differenceXPosition)
     {
       var platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -66,7 +71,18 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       
       Destroy(this);
     }
+    
+    public void IncreaseScale() => transform.DOScaleX
+      (
+        GetScaleAmount() + transform.localScale.x, 
+        PlatformController.SPlatformControllerData.SnapDuration
+        )
+      .SetEase(PlatformController.SPlatformControllerData.ScaleCurve);
+    #endregion
 
+    #region Neccessary Calculations
+    private float GetDistanceFromPlatform() => transform.position.x - PlatformController.PreviousPlatform.transform.position.x;
+    
     private float GetScaleAmount()
     {
       var scale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
@@ -75,14 +91,8 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       var defaultScale = PlatformController.SPlatformControllerData.PlatformPrefab.transform.localScale.x;
       var scaleAmount = scale.x < defaultScale ? (defaultScale - scale.x > scaleTreshold ? scaleTreshold : defaultScale - scale.x) : 0f;
 
-      scale.x += scaleAmount;
-      return scale.x;
+      return scaleAmount;
     }
-
-    public void IncreaseScale()
-    {
-      transform.DOScaleX(GetScaleAmount(), PlatformController.SPlatformControllerData.SnapDuration).SetEase(PlatformController.SPlatformControllerData.ScaleCurve);
-
-    }
+    #endregion
   }
 }
