@@ -1,11 +1,18 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
+using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Project._Scripts.GameCore.PlatformSystem.Core
 {
   public class Platform : MonoBehaviour
   {
+    #region Components
+    public Material Material { get; set; }
+    #endregion
+    
     #region Fields
     [Range(1f,5f)]public float TransitionDuration = 2f;
     public Tweener TransitionTween { get; set; }
@@ -14,7 +21,12 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
     #endregion
 
     #region Unity Functions
+    private void Awake() => InitializationComponents();
     private void Start() => RunPlatform();
+    #endregion
+
+    #region Initialization
+    private void InitializationComponents() => Material = GetComponent<MeshRenderer>().material;
     #endregion
 
     #region Platform Behaviour
@@ -39,7 +51,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       {
         PlatformController.SnappedPlatformCount = 0;
         RescalePlatform(distance);
-        SpawnDropCube(distance);
+        SpawnFallingPlatform(distance);
       }
       
       PlatformController.OnPlatformSpawnedHandler(PlatformController.IsComboActive ? GetScaleAmount() : 0f);
@@ -59,13 +71,14 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       transform.position = new Vector3(transform.position.x - (distance / 2), transform.position.y, transform.position.z);
     }
     
-    private void SpawnDropCube(float differenceXPosition)
+    private void SpawnFallingPlatform(float differenceXPosition)
     {
       var platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
       int multiplier = differenceXPosition >= 0 ? 1 : -1;
       platform.transform.localScale = new Vector3(Mathf.Abs(differenceXPosition), transform.localScale.y, transform.localScale.z);
       platform.transform.position = new Vector3(transform.position.x + multiplier*transform.localScale.x/2 + (differenceXPosition/2), transform.position.y, transform.position.z);
 
+      platform.GetComponent<MeshRenderer>().material.color = Material.color;
       platform.AddComponent<Rigidbody>();
       
       

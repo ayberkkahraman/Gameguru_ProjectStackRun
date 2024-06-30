@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e689058b5f804856b4acee3e2f1e3913, type: 3}
-  m_Name: ChibiLocomotionData
+  m_Script: {fileID: 11500000, guid: fe1e4c92cfe54ec0aaee04c865cc6af0, type: 3}
+  m_Name: ColorEventData
   m_EditorClassIdentifier: 
-  MovementSpeed: 3.25
-  TransitionSpeed: 1
+  TimeStep: 20

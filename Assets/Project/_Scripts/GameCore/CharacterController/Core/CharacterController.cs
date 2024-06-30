@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using DG.Tweening;
 using Project._Scripts.GameCore.CharacterController.ScriptableObjects;
 using Project._Scripts.GameCore.PlatformSystem.System;
+using Project._Scripts.Global.Manager.Core;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Debug = UnityEngine.Debug;
 
 namespace Project._Scripts.GameCore.CharacterController.Core
 {
@@ -11,9 +14,10 @@ namespace Project._Scripts.GameCore.CharacterController.Core
   public class CharacterController : MonoBehaviour
   {
     #region Components
+    private PlatformController _platformController;
     public CharacterLocomotionData CharacterLocomotionData;
     private Animator _animator;
-    private UnityEngine.CharacterController _characterController;
+    private Rigidbody _rigidbody;
     #endregion
 
     #region Fields
@@ -22,24 +26,19 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     #endregion
 
     #region Unity Functions
-    private void Awake()
-    {
-      InitializeComponents();
-      InitializeLocomotion();
-    }
-    private void OnEnable() => Initialize();
-    private void OnDisable() => DeInitialize();
+    private void Awake() => Initialize();
+    private void OnEnable() => InitializeDelegates();
+    private void OnDisable() => DeInitializeDelegates();
+    
     private void Update(){if(CanMove) MoveCharacter();}
     #endregion
 
     #region Initialize / DeInitialization
     private void Initialize()
     {
-      InitializeDelegates();
       InitializeComponents();
       InitializeLocomotion();
     }
-    private void DeInitialize() => DeInitializeDelegates();
     
     private void InitializeDelegates() => PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
     private void DeInitializeDelegates() => PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
@@ -49,19 +48,20 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     private void InitializeComponents()
     {
       _animator = GetComponent<Animator>();
-      _characterController = GetComponent<UnityEngine.CharacterController>();
+      _rigidbody = GetComponent<Rigidbody>();
+      _platformController = ManagerCore.Instance.GetInstance<PlatformController>();
     }
     #endregion
     
     #region Character Movement Behaviour
-    private void MoveCharacter() => transform.position += transform.forward * (_movementSpeed * Time.deltaTime);
-    internal void TranslateCharacter() => StartCoroutine(TranslateCharacterCoroutine());
+    private void MoveCharacter() => _rigidbody.MovePosition(_rigidbody.position + transform.forward * (_movementSpeed * Time.deltaTime));
+    private void TranslateCharacter() => StartCoroutine(TranslateCharacterCoroutine());
     
     IEnumerator TranslateCharacterCoroutine()
     {
-      yield return new WaitForSeconds(PlatformController.SPlatformControllerData.ScaleDuration);
+      yield return new WaitForSeconds(_platformController.PlatformControllerData.ScaleDuration);
       
-      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, PlatformController.SPlatformControllerData.ScaleDuration).SetEase(Ease.InOutSine);
+      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, _platformController.PlatformControllerData.ScaleDuration).SetEase(Ease.InOutSine);
     }
     #endregion
   }

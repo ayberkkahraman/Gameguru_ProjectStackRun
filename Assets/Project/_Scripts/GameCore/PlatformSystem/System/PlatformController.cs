@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using Project._Scripts.GameCore.PlatformSystem.Core;
+using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
 using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Global.Manager.ManagerClasses;
@@ -56,9 +57,9 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     {
       IsComboActive = false;
       SnappedPlatformCount = 0;
+      ColorEventData.CurrentColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
      
       OnPlatformSpawnedHandler += SpawnPlatform;
-      OnPlatformSpawnedHandler += (_) => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(PreviousPlatform);
       OnPlatformKilledHandler += KillPlatform;
 
       OnPlatformSnappedHandler += (_) => IncreaseSnappedPlatformCount();
@@ -70,7 +71,6 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     {
       OnPlatformKilledHandler -= KillPlatform;
       OnPlatformSpawnedHandler -= SpawnPlatform;
-      OnPlatformSpawnedHandler -= (_) => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(PreviousPlatform);
     }
     #endregion
 
@@ -78,6 +78,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     private void SpawnPlatform(float scale = 0f)
     {
       PreviousPlatform = transform.GetChild(0);
+      
       int multiplier = (_platformCount % 2 == 0) ? 1 : -1;
     
       Vector3 position = new Vector3(
@@ -92,6 +93,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
         Quaternion.identity, 
         transform
       );
+      ColorEventData.SetNextColor(platform.Material);
     
       platform.transform.localScale = new Vector3(
         PreviousPlatform.localScale.x + scale, 
