@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e689058b5f804856b4acee3e2f1e3913, type: 3}
   m_Name: ChibiLocomotionData
   m_EditorClassIdentifier: 
-  MovementSpeed: 4
+  MovementSpeed: 3
   TransitionSpeed: 1

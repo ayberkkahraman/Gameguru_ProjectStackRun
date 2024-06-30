@@ -1,8 +1,12 @@
-﻿using Project._Scripts.GameCore.CharacterController.ScriptableObjects;
+﻿using System.Collections;
+using DG.Tweening;
+using Project._Scripts.GameCore.CharacterController.ScriptableObjects;
+using Project._Scripts.GameCore.PlatformSystem.System;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.CharacterController.Core
 {
+  [DefaultExecutionOrder(800)]
   public class CharacterController : MonoBehaviour
   {
     public CharacterLocomotionData CharacterLocomotionData;
@@ -10,13 +14,22 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     private UnityEngine.CharacterController _characterController;
     
     private float _movementSpeed;
-    private float _transitionSpeed;
 
     public bool Run;
     private void Awake()
     {
       InitializeComponents();
       InitializeLocomotion();
+    }
+
+    private void OnEnable()
+    {
+      PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
+    }
+
+    private void OnDisable()
+    {
+      PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
     }
 
     private void Update()
@@ -29,7 +42,6 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     private void InitializeLocomotion()
     {
       _movementSpeed = CharacterLocomotionData.MovementSpeed;
-      _transitionSpeed = CharacterLocomotionData.TransitionSpeed;
     }
 
     private void InitializeComponents()
@@ -40,7 +52,16 @@ namespace Project._Scripts.GameCore.CharacterController.Core
 
     private void MoveCharacter()
     {
-      _characterController.Move(transform.forward * (_movementSpeed * Time.deltaTime));
+      transform.position += transform.forward * (_movementSpeed * Time.deltaTime);
+    }
+
+    void TranslateCharacter() => StartCoroutine(TranslateCharacterCoroutine());
+
+    IEnumerator TranslateCharacterCoroutine()
+    {
+      yield return new WaitForSeconds(PlatformController.SPlatformControllerData.ScaleDuration);
+      
+      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, PlatformController.SPlatformControllerData.ScaleDuration).SetEase(Ease.InOutSine);
     }
   }
 }

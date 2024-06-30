@@ -1,18 +1,20 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Project._Scripts.GameCore.PlatformSystem.Core;
+using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
+using Project._Scripts.Global.Manager.Core;
+using Project._Scripts.Global.Manager.ManagerClasses;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.PlatformSystem.System
 {
+  [DefaultExecutionOrder(750)]
   public class PlatformController : MonoBehaviour
   {
-    public Platform PlatformPrefab;
     public static Platform CurrentPlatform;
     public static Transform PreviousPlatform;
 
-    [Range(0f, 2f)] public float Tolerance = .1f;
-    public static float TOLERANCE;
+    public PlatformControllerData PlatformControllerData;
+    public static PlatformControllerData SPlatformControllerData;
 
     public static int SnappedPlatformCount;
 
@@ -22,20 +24,21 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
    public delegate void OnPlatformKilled(Platform platform);
    public static OnPlatformKilled OnPlatformKilledHandler;
    
-   public delegate void OnPlatformSpawned();
+   public delegate void OnPlatformSpawned(float scale = 0f);
    public static OnPlatformSpawned OnPlatformSpawnedHandler;
 
    private int _platformCount;
 
-   private void Start() => OnPlatformSpawnedHandler();
+   private void Start() => OnPlatformSpawnedHandler(PlatformControllerData.PlatformPrefab.transform.localScale.x);
 
-   private void Awake() => TOLERANCE = Tolerance;
+   private void Awake() => SPlatformControllerData = PlatformControllerData;
 
    private void OnEnable()
    {
      SnappedPlatformCount = 0;
      
      OnPlatformSpawnedHandler += SpawnPlatform;
+     OnPlatformSpawnedHandler += (_) => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(PreviousPlatform);
      OnPlatformKilledHandler += KillPlatform;
 
      OnPlatformSnappedHandler += (_) => IncreaseSnappedPlatformCount();
@@ -47,6 +50,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
    {
      OnPlatformKilledHandler -= KillPlatform;
      OnPlatformSpawnedHandler -= SpawnPlatform;
+     OnPlatformSpawnedHandler -= (_) => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(PreviousPlatform);
    }
 
    private void Update()
@@ -65,13 +69,13 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
    private void IncreaseSnappedPlatformCount() => SnappedPlatformCount++;
    private void CheckSnappedPlatforms(Platform platform)
    {
-     platform.IncreaseScale();
-     // if(Mathf.Approximately(platform.transform.localScale.x, platform.transform.localScale.z)) return;
+     if(Mathf.Approximately(platform.transform.localScale.x, 3f)) return;
      
-     // if (SnappedPlatformCount >= 3)
-     // {
-     //   platform.IncreaseScale();
-     // }
+     Debug.Log(SnappedPlatformCount);
+     if (SnappedPlatformCount >= 3)
+     {
+       platform.IncreaseScale();
+     }
    }
 
    private void PlayAudio()
@@ -79,14 +83,15 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
      // Debug.Log("Music Note");
    }
 
-   private void SpawnPlatform()
+   private void SpawnPlatform(float scale = 0f)
    {
      PreviousPlatform = transform.GetChild(0);
      int multiplier = _platformCount % 2 == 0 ? 1 : -1;
      var position = new Vector3(multiplier * -6f, PreviousPlatform.transform.position.y, PreviousPlatform.transform.position.z + PreviousPlatform.transform.localScale.z);
      
-     Platform platform = Instantiate(PlatformPrefab, position, Quaternion.identity, transform);
-     platform.transform.localScale = PreviousPlatform.localScale;
+     Platform platform = Instantiate(PlatformControllerData.PlatformPrefab, position, Quaternion.identity, transform);
+     var targetScale = new Vector3(scale, PreviousPlatform.localScale.y, PreviousPlatform.localScale.z);
+     platform.transform.localScale = targetScale;
 
      platform.transform.SetSiblingIndex(0);
      PreviousPlatform = transform.GetChild(1);

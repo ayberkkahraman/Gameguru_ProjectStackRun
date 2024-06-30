@@ -8,12 +8,11 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
   {
     private Rigidbody _rigidbody;
     private BoxCollider _boxCollider;
-
-    private const float SnapDuration = .05f;
+    
     [Range(1f,5f)]public float TransitionDuration = 2f;
     public Tweener TransitionTween;
-    
 
+    private float _scaleAmount;
     private void Start()
     {
       TransitionTween = transform.DOMoveX(-transform.position.x, TransitionDuration)
@@ -23,9 +22,9 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
 
     public void SnapPlatform()
     {
-      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, SnapDuration)
-        .SetEase(Ease.InOutSine)
-        .OnComplete(() => PlatformController.OnPlatformSnappedHandler(this));
+      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, PlatformController.SPlatformControllerData.SnapDuration)
+        .SetEase(PlatformController.SPlatformControllerData.SnapCurve);
+      PlatformController.OnPlatformSnappedHandler(this);
     }
 
     public void RescalePlatform(float distance)
@@ -38,7 +37,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
     {
       var distance = GetDistanceFromPlatform();
 
-      if (Mathf.Abs(distance) <= PlatformController.TOLERANCE)
+      if (Mathf.Abs(distance) <= PlatformController.SPlatformControllerData.SnapTolerance)
       {
         SnapPlatform();
       }
@@ -50,15 +49,10 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
         SpawnDropCube(distance);
       }
       
-      PlatformController.OnPlatformSpawnedHandler();
+      PlatformController.OnPlatformSpawnedHandler(GetScaleAmount());
     }
 
-    private float GetDistanceFromPlatform()
-    {
-      float currentPlatformPositionX = transform.position.x;
-      float previousPlatformPositionX = PlatformController.PreviousPlatform.transform.position.x;
-      return currentPlatformPositionX - previousPlatformPositionX;
-    }
+    private float GetDistanceFromPlatform() => transform.position.x - PlatformController.PreviousPlatform.transform.position.x;
 
     private void SpawnDropCube(float differenceXPosition)
     {
@@ -73,15 +67,22 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       Destroy(this);
     }
 
+    private float GetScaleAmount()
+    {
+      var scale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+      var scaleTreshold = PlatformController.SPlatformControllerData.ScaleAmount;
+
+      var defaultScale = PlatformController.SPlatformControllerData.PlatformPrefab.transform.localScale.x;
+      var scaleAmount = scale.x < defaultScale ? (defaultScale - scale.x > scaleTreshold ? scaleTreshold : defaultScale - scale.x) : 0f;
+
+      scale.x += scaleAmount;
+      return scale.x;
+    }
+
     public void IncreaseScale()
     {
-      var currentScale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
-      var scaleTreshold = .25f;
-      var scaleAmount = currentScale.x < currentScale.z ? (currentScale.z - currentScale.x > scaleTreshold ? scaleTreshold : currentScale.z - currentScale.x) : 0f;
-      Debug.Log(scaleAmount);
-      if(Mathf.Approximately(currentScale.x, currentScale.z)) return;
-      currentScale.x += scaleAmount;
-      transform.localScale = currentScale;
+      transform.DOScaleX(GetScaleAmount(), PlatformController.SPlatformControllerData.SnapDuration).SetEase(PlatformController.SPlatformControllerData.ScaleCurve);
+
     }
   }
 }
