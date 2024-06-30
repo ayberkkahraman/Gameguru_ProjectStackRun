@@ -1,5 +1,6 @@
 ﻿using System;
 using DG.Tweening;
+using Project._Scripts.GameCore.MapGeneration;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.System;
 using UnityEngine;
@@ -53,7 +54,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
         RescalePlatform(distance);
         SpawnFallingPlatform(distance);
       }
-      
+
       PlatformController.OnPlatformSpawnedHandler(PlatformController.IsComboActive ? GetScaleAmount() : 0f);
     }
     

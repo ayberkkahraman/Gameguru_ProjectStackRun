@@ -11,9 +11,9 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
 public class CameraManager : MonoBehaviour
     {
         #region Cameras
-        public Camera MainCamera;
         public CinemachineVirtualCamera DefaultCam{ get; set; }
         public CinemachineVirtualCamera CharacterCamera;
+        public CinemachineVirtualCamera LevelEndCamera;
         public CinemachineVirtualCameraBase CurrentCamera { get; set; }
         #endregion
 
@@ -48,7 +48,6 @@ public class CameraManager : MonoBehaviour
             CinemachineVirtualCameras = FindObjectsOfType<CinemachineVirtualCamera>().ToList();
 
             DefaultCam = CharacterCamera;
-            MainCamera = Camera.main;
             CurrentCamera = CharacterCamera;
             CinemachineBasicMultiChannelPerlin = DefaultCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
@@ -101,6 +100,11 @@ public class CameraManager : MonoBehaviour
         public void UpdateFollowTarget(Transform targetTransform)
         {
             CurrentCamera.Follow = targetTransform;
+        }
+        
+        public void UpdateLookAtTarget(Transform targetTransform)
+        {
+            CurrentCamera.LookAt = targetTransform;
         }
 
         public static void ShakeCamera(Action action) => action?.Invoke();

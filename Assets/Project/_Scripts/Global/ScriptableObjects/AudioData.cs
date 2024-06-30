@@ -2,7 +2,7 @@
 
 namespace Project._Scripts.Global.ScriptableObjects
 {
-  [CreateAssetMenu(fileName = "AudioData", menuName = "Game/Audio")]
+  [CreateAssetMenu(fileName = "AudioData", menuName = "Global/Datas/AudioData")]
   public class AudioData : ScriptableObject
   {
     #region Childs

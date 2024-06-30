@@ -1,5 +1,6 @@
 ﻿using System;
 using Project._Scripts.GameCore.InteractionSystem.Interfaces;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Core
@@ -25,7 +26,7 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Core
       
       IsInteractable = true;
 
-      if(BaseSettings.InteractOnTrigger)InteractionStartCallback?.Invoke();
+      if(BaseSettings.InteractOnTrigger)StartInteraction();
     }
 
     public virtual void OnTriggerExit(Collider other)
@@ -36,7 +37,7 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Core
 
       if (!BaseSettings.InteractOnTrigger) return;
       
-      InteractionEndCallback?.Invoke();
+      EndInteraction();
       
       if(BaseSettings.DestroyAfterTriggerEnd)
         Destroy(gameObject);

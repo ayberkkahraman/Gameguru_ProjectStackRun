@@ -1,9 +1,11 @@
 ﻿using DG.Tweening;
+using Project._Scripts.GameCore.MapGeneration;
 using Project._Scripts.GameCore.PlatformSystem.Core;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
 using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Global.Manager.ManagerClasses;
+using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.PlatformSystem.System
@@ -48,7 +50,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     private void OnEnable() => Initialize();
     private void OnDisable() => DeInitialize();
     private void Start() => OnPlatformSpawnedHandler();
-    private void Update() {if (Input.GetMouseButtonDown(0))OnPlatformKilledHandler(CurrentPlatform);}
+    private void Update() {if (Input.GetMouseButtonDown(0)) OnPlatformKilledHandler(CurrentPlatform);}
     #endregion
     
     #region Initialization / DeInitialization
@@ -60,23 +62,34 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       ColorEventData.CurrentColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
      
       OnPlatformSpawnedHandler += SpawnPlatform;
+      
       OnPlatformKilledHandler += KillPlatform;
+      OnPlatformKilledHandler += (_) => LevelGenerator.IncreasePlatformCount();
 
       OnPlatformSnappedHandler += (_) => IncreaseSnappedPlatformCount();
       OnPlatformSnappedHandler += CheckSnappedPlatforms;
       OnPlatformSnappedHandler += (_) => PlayAudio();
+
+      GameManagerData.OnLevelCompletedHandler += () => Destroy(this);
     }
 
     private void DeInitialize()
     {
       OnPlatformKilledHandler -= KillPlatform;
+      OnPlatformKilledHandler += (_) => LevelGenerator.IncreasePlatformCount();
+      
       OnPlatformSpawnedHandler -= SpawnPlatform;
+      
+      GameManagerData.OnLevelCompletedHandler -= () => Destroy(this);
     }
     #endregion
 
     #region Platform Handling
     private void SpawnPlatform(float scale = 0f)
     {
+      if(!LevelGenerator.CanGeneratePlatform) return;
+
+      
       PreviousPlatform = transform.GetChild(0);
       
       int multiplier = (_platformCount % 2 == 0) ? 1 : -1;

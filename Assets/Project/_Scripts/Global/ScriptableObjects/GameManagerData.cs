@@ -2,6 +2,7 @@
 
 namespace Project._Scripts.Global.ScriptableObjects
 {
+  [CreateAssetMenu(fileName = "GameManagerData", menuName = "Global/Datas/GameManagerData")]
   public class GameManagerData : ScriptableObject
   {
     public enum State{Running, Completed, Failed}

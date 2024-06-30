@@ -9,8 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e689058b5f804856b4acee3e2f1e3913, type: 3}
-  m_Name: ChibiLocomotionData
+  m_Script: {fileID: 11500000, guid: c87b4764d50b4a7b96c956f9f5f1efd6, type: 3}
+  m_Name: GameManagerData
   m_EditorClassIdentifier: 
-  MovementSpeed: 2
-  TransitionSpeed: 1

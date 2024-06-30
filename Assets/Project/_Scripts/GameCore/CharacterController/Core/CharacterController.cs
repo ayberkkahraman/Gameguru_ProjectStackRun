@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using DG.Tweening;
 using Project._Scripts.GameCore.CharacterController.ScriptableObjects;
 using Project._Scripts.GameCore.PlatformSystem.System;
 using Project._Scripts.Global.Manager.Core;
+using Project._Scripts.Global.Manager.ManagerClasses;
+using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Debug = UnityEngine.Debug;
 
 namespace Project._Scripts.GameCore.CharacterController.Core
 {
@@ -16,13 +15,12 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     #region Components
     private PlatformController _platformController;
     public CharacterLocomotionData CharacterLocomotionData;
-    private Animator _animator;
     private Rigidbody _rigidbody;
     #endregion
 
     #region Fields
     private float _movementSpeed;
-    public bool CanMove;
+    public bool CanMove { get; set; }
     #endregion
 
     #region Unity Functions
@@ -39,15 +37,24 @@ namespace Project._Scripts.GameCore.CharacterController.Core
       InitializeComponents();
       InitializeLocomotion();
     }
-    
-    private void InitializeDelegates() => PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
-    private void DeInitializeDelegates() => PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
+
+    private void InitializeDelegates()
+    {
+      PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
+      GameManagerData.OnLevelCompletedHandler += () => CanMove = false;
+      GameManager.OnGameStartedHandler += () => CanMove = true;
+    }
+    private void DeInitializeDelegates()
+    {
+      PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
+      GameManagerData.OnLevelCompletedHandler -= () => CanMove = false;
+      GameManager.OnGameStartedHandler -= () => CanMove = true;
+    }
 
     private void InitializeLocomotion() => _movementSpeed = CharacterLocomotionData.MovementSpeed;
 
     private void InitializeComponents()
     {
-      _animator = GetComponent<Animator>();
       _rigidbody = GetComponent<Rigidbody>();
       _platformController = ManagerCore.Instance.GetInstance<PlatformController>();
     }
