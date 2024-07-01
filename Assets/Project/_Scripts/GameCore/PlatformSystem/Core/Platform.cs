@@ -55,6 +55,11 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
 
       else
       {
+        if (Mathf.Abs(distance) >= PlatformController.PreviousPlatform.transform.localScale.x)
+        {
+          gameObject.AddComponent<Rigidbody>();
+          return;
+        }
         AudioOwner.Play("MusicNote", false, .1f);
         PlatformController.SnappedPlatformCount = 0;
         RescalePlatform(distance);
