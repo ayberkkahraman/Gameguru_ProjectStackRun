@@ -1,13 +1,10 @@
-﻿using System;
-using Project._Scripts.GameCore.InteractionSystem.Interactables.Elements;
+﻿using Project._Scripts.GameCore.InteractionSystem.Interactables.Elements;
 using Project._Scripts.GameCore.PlatformSystem.System;
-using Project._Scripts.Global.Manager.Core;
-using Project._Scripts.Global.Manager.ManagerClasses;
 using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Project._Scripts.GameCore.MapGeneration
+namespace Project._Scripts.GameCore.MapGeneration.System
 {
   [DefaultExecutionOrder(920)]
   public class LevelGenerator : MonoBehaviour
@@ -18,7 +15,7 @@ namespace Project._Scripts.GameCore.MapGeneration
     public static int CurrentPlatformCount;
     public static bool CanGeneratePlatform => CurrentPlatformCount < PlatformCount - 1;
     public Finish CurrentFinish { get; set; }
-    // private Vector3 _levelInitialPosition;
+    public static Finish SCurrentFinish;
 
     private delegate void GenerateLevel(Vector3 position);
     private GenerateLevel _generateLevelHandler;
@@ -44,7 +41,11 @@ namespace Project._Scripts.GameCore.MapGeneration
       ResetPlatformCount();
     }
 
-    private void GenerateFinishObstacle(Vector3 position) => CurrentFinish = Instantiate(FinishObstaclePrefab, position, Quaternion.identity);
+    private void GenerateFinishObstacle(Vector3 position)
+    {
+      CurrentFinish = Instantiate(FinishObstaclePrefab, position, Quaternion.identity);
+      SCurrentFinish = CurrentFinish;
+    }
     private void SetLevelSize() => PlatformCount = Random.Range(PlatformCountLimits.x, PlatformCountLimits.y+1);
     private void ResetPlatformCount() => CurrentPlatformCount = 1;
     public static void IncreasePlatformCount() => CurrentPlatformCount++;
@@ -73,11 +74,10 @@ namespace Project._Scripts.GameCore.MapGeneration
 
       Destroy(CurrentFinish);
       
+      _generateLevelHandler?.Invoke(position);
+      
       GameManagerData.OnGameStartedHandler();
       PlatformController.OnPlatformSpawnedHandler(true);
-      
-      
-      _generateLevelHandler?.Invoke(position);
     }
   }
 }

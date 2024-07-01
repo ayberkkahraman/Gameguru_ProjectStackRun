@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using Project._Scripts.GameCore.MapGeneration;
+using Project._Scripts.GameCore.MapGeneration.System;
 using Project._Scripts.GameCore.PlatformSystem.Core;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
