@@ -29,15 +29,9 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
         #endregion
 
         #region Unity Functions
-        private void OnEnable()
-        {
-            Init();
-        }
+        private void OnEnable() => Init();
 
-        private void OnDisable()
-        {
-            DeInit();
-        }
+        private void OnDisable() => DeInit();
         #endregion
 
     
@@ -102,22 +96,10 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
         /// Updates the follow transform of the Camera
         /// </summary>
         /// <param name="targetTransform"></param>
-        public void UpdateFollowTarget(Transform targetTransform)
-        {
-            CurrentCamera.Follow = targetTransform;
-        }
-        
-        public void UpdateLookAtTarget(Transform targetTransform)
-        {
-            CurrentCamera.LookAt = targetTransform;
-        }
-
+        public void UpdateFollowTarget(Transform targetTransform) => CurrentCamera.Follow = targetTransform;
+        public void UpdateLookAtTarget(Transform targetTransform) => CurrentCamera.LookAt = targetTransform;
         public static void ShakeCamera(Action action) => action?.Invoke();
-
-        public void ShakeCamera()
-        {
-            StartCoroutine(ShakeCameraCoroutine(ShakeIntensity, ShakeDuration));
-        }
+        public void ShakeCamera() => StartCoroutine(ShakeCameraCoroutine(ShakeIntensity, ShakeDuration));
     
         public void ShakeCamera(float intensity, float duration, float frequencyGain = 0f)
         {

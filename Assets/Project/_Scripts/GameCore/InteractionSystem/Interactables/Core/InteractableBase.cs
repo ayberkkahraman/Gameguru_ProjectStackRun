@@ -1,13 +1,12 @@
 ﻿using System;
 using Project._Scripts.GameCore.InteractionSystem.Interfaces;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Core
 {
   public abstract class InteractableBase : MonoBehaviour, IInteractable
   {
-     #region Fields
+    #region Fields
     public BaseSettings BaseSettings;
     public bool IsInteractable { get; set; }
     #endregion
@@ -43,16 +42,21 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Core
         Destroy(gameObject);
     }
     #endregion
-    
-    public virtual void StartInteraction() => InteractionStartCallback?.Invoke();
 
+    #region Interaction Events
+    public virtual void StartInteraction() => InteractionStartCallback?.Invoke();
     public virtual void EndInteraction() => InteractionEndCallback?.Invoke();
+    #endregion
+
   }
-  
+
+  #region Base Settings Struct
   [Serializable]
   public struct BaseSettings
   {
     public bool DestroyAfterTriggerEnd;
     public bool InteractOnTrigger;
   }
+  #endregion
+
 }

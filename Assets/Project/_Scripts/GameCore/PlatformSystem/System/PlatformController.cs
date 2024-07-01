@@ -1,9 +1,7 @@
-﻿using DG.Tweening;
-using Project._Scripts.GameCore.MapGeneration.System;
+﻿using Project._Scripts.GameCore.MapGeneration.System;
 using Project._Scripts.GameCore.PlatformSystem.Core;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
-using Project._Scripts.Global.SubSystem;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.PlatformSystem.System
@@ -22,7 +20,6 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     #region Fields
     private int _platformCount;
     public static int SnappedPlatformCount;
-    public static int ComboCount;
    
     private static bool _isComboActive;
     public static bool IsComboActive
@@ -60,8 +57,8 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       ColorEventData.CurrentColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
      
       OnPlatformSpawnedHandler += (reset,_) => SpawnPlatform(reset);
-      
-      OnPlatformKilledHandler += KillPlatform;
+
+      OnPlatformKilledHandler += (platform) => platform.KillPlatform();
       OnPlatformKilledHandler += (_) => LevelGenerator.IncreasePlatformCount();
 
       OnPlatformSnappedHandler += (_) => IncreaseSnappedPlatformCount();
@@ -125,8 +122,6 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       
       return platform;
     }
-    
-    internal void KillPlatform(Platform platform) => platform.TransitionTween.Kill();
     #endregion
 
     #region Combo Handling
@@ -136,7 +131,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       if(Mathf.Approximately(platform.transform.localScale.x, PlatformControllerData.PlatformPrefab.transform.localScale.x)) return;
 
       if (SnappedPlatformCount < PlatformControllerData.SnapCombo) return; 
-      platform.IncreaseScale();
+      platform.IncreasePlatformScale();
     }
     #endregion
   }

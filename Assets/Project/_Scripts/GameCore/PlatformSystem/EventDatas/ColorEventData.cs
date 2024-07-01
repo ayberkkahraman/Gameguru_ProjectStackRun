@@ -7,19 +7,25 @@ namespace Project._Scripts.GameCore.PlatformSystem.EventDatas
   [CreateAssetMenu(fileName = "ColorEventData", menuName = "GameCore/PlatformSystem/EventDatas/ColorEventData")]
   public class ColorEventData : EventData
   {
-    public static int STimeStep{ get; set; }
+    #region Fields
     [Range(1, 20)]public int TimeStep = 10;
     
+    public static int STimeStep{ get; set; }
     public static Color CurrentColor { get; set; }
     public static Color TargetColor{ get; set; }
     private static Vector3 _colorChangeAmountOnStep;
+    #endregion
+
+    #region Events
     public override void Execute()
     {
       STimeStep = TimeStep;
       SetTargetColor();
     }
     public override void Dispose() => STimeStep = 0;
+    #endregion
 
+    #region Color Behaviours
     public static void SetTargetColor()
     {
       TargetColor = RandomColor();
@@ -40,5 +46,6 @@ namespace Project._Scripts.GameCore.PlatformSystem.EventDatas
     }
     
     public static Color RandomColor() => new(Random.value, Random.value, Random.value);
+    #endregion
   }
 }

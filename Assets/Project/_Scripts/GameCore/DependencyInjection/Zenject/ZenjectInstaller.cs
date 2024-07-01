@@ -1,5 +1,5 @@
-﻿using Project._Scripts.Global.Manager.ManagerClasses;
-using UnityEngine;
+﻿using Project._Scripts.GameCore.PlatformSystem.System;
+using Project._Scripts.Global.Manager.ManagerClasses;
 using Zenject;
 
 namespace Project._Scripts.GameCore.DependencyInjection.Zenject
@@ -9,6 +9,7 @@ namespace Project._Scripts.GameCore.DependencyInjection.Zenject
     public override void InstallBindings()
     {
       Container.Bind<CameraManager>().FromComponentInHierarchy().AsSingle();
+      Container.Bind<PlatformController>().FromComponentInHierarchy().AsSingle();
     }
   }
 }

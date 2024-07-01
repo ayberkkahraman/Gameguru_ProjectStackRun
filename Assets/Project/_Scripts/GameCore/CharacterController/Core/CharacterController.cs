@@ -2,18 +2,29 @@
 using DG.Tweening;
 using Project._Scripts.GameCore.CharacterController.ScriptableObjects;
 using Project._Scripts.GameCore.PlatformSystem.System;
-using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Global.Manager.ManagerClasses;
 using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
+using Zenject;
 
 namespace Project._Scripts.GameCore.CharacterController.Core
 {
   [DefaultExecutionOrder(800)]
   public class CharacterController : MonoBehaviour
   {
-    #region Components
+    #region Dependency Injection
+    [Inject]
+    public void Construct(PlatformController platformController, CameraManager cameraManager)
+    {
+      _platformController = platformController;
+      _cameraManager = cameraManager;
+    }
+    
     private PlatformController _platformController;
+    private CameraManager _cameraManager;
+    #endregion
+
+    #region Components
     public CharacterLocomotionData CharacterLocomotionData;
     private Rigidbody _rigidbody;
     #endregion
@@ -40,37 +51,32 @@ namespace Project._Scripts.GameCore.CharacterController.Core
 
     private void InitializeDelegates()
     {
-      PlatformController.OnPlatformSpawnedHandler += (_,_) => TranslateCharacter();
+      PlatformController.OnPlatformKilledHandler += (platform) => TranslateCharacter(platform.transform);
       GameManagerData.OnLevelSuccessHandler += () => CanMove = false;
       GameManagerData.OnGameStartedHandler += () => CanMove = true;
-      GameManagerData.OnGameStartedHandler += () => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(transform);
+      GameManagerData.OnGameStartedHandler += () => _cameraManager.UpdateFollowTarget(transform);
     }
     private void DeInitializeDelegates()
     {
-      PlatformController.OnPlatformSpawnedHandler -= (_,_) => TranslateCharacter();
+      PlatformController.OnPlatformKilledHandler -= (platform) => TranslateCharacter(platform.transform);
       GameManagerData.OnLevelSuccessHandler -= () => CanMove = false;
       GameManagerData.OnGameStartedHandler -= () => CanMove = true;
-      GameManagerData.OnGameStartedHandler -= () => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(transform);
+      GameManagerData.OnGameStartedHandler -= () => _cameraManager.UpdateFollowTarget(transform);
     }
 
     private void InitializeLocomotion() => _movementSpeed = CharacterLocomotionData.MovementSpeed;
-
-    private void InitializeComponents()
-    {
-      _rigidbody = GetComponent<Rigidbody>();
-      _platformController = ManagerCore.Instance.GetInstance<PlatformController>();
-    }
+    private void InitializeComponents() => _rigidbody = GetComponent<Rigidbody>();
     #endregion
     
     #region Character Movement Behaviour
     private void MoveCharacter() => _rigidbody.MovePosition(_rigidbody.position + transform.forward * (_movementSpeed * Time.deltaTime));
-    private void TranslateCharacter() => StartCoroutine(TranslateCharacterCoroutine());
+    private void TranslateCharacter(Transform platform) => StartCoroutine(TranslateCharacterCoroutine(platform));
     
-    IEnumerator TranslateCharacterCoroutine()
+    IEnumerator TranslateCharacterCoroutine(Transform platform)
     {
       yield return new WaitForSeconds(_platformController.PlatformControllerData.ScaleDuration);
       
-      transform.DOMoveX(PlatformController.PreviousPlatform.position.x, _platformController.PlatformControllerData.ScaleDuration).SetEase(Ease.InOutSine);
+      transform.DOMoveX(platform.position.x, CharacterLocomotionData.TransitionSpeed).SetEase(Ease.InOutSine);
     }
     #endregion
   }

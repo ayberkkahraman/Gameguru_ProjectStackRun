@@ -40,40 +40,11 @@ namespace Project._Scripts.Library.Audio.Manager
             InitializeAudioResources();
         }
 
-        private void OnEnable()
-        {
-            GameManagerData.OnGameStartedHandler += () => ResetPitch(true);
-        }
-
-        private void OnDisable()
-        {
-            GameManagerData.OnGameStartedHandler += () => ResetPitch(true);
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                PlayAudio("MusicNote", true, .1f);
-                IncrementalPitchCounter++;
-            }
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                PlayAudio("MusicNote", false);
-                IncrementalPitchCounter = 0;
-            }
-        }
+        private void OnEnable() => GameManagerData.OnGameStartedHandler += () => ResetPitch(true);
+        private void OnDisable() => GameManagerData.OnGameStartedHandler += () => ResetPitch(true);
         #endregion
 
-        public static void ResetPitch(bool initial) => IncrementalPitchCounter = initial ? -1 : 0;
-        public static void IncreasePitch()
-        {
-            if(IncrementalPitchCounter < 10)
-                IncrementalPitchCounter++;
-        }
-
-        #region Audio Interactions
-
+        #region Initialization
         private void Initialize()
         {
             //------------------------------INITIALIZING THE AUDIO CHANNELS----------------------------------
@@ -84,10 +55,16 @@ namespace Project._Scripts.Library.Audio.Manager
 
         }
 
-        private void InitializeAudioResources()
-        {
-            _audioDatas = Resources.LoadAll<AudioData>("AudioDatas").ToList();
-        }
+        private void InitializeAudioResources() => _audioDatas = Resources.LoadAll<AudioData>("AudioDatas").ToList();
+        #endregion
+
+        #region Pitch Behaviours
+        public static void ResetPitch(bool initial) => IncrementalPitchCounter = initial ? -1 : 0;
+        public static void IncreasePitch(){if(IncrementalPitchCounter < 10)IncrementalPitchCounter++;}
+        #endregion
+
+
+        #region Audio Interactions
 
         /// <summary>
         /// Play Audio on UI Interaction
@@ -165,7 +142,7 @@ namespace Project._Scripts.Library.Audio.Manager
         }
 
         /// <summary>
-        /// Play audio with it's name
+        /// Play audio with name
         /// </summary>
         /// <param name="audioName"></param>
         public void PlayAudio(string audioName)
@@ -181,9 +158,8 @@ namespace Project._Scripts.Library.Audio.Manager
             PlayAudio(audioData);
         }
         
-        public void PlayAudio(string audioName, bool isIncrementing = false, float pitchAmount = .025f)
+        public void PlayAudio(string audioName, bool isIncrementing, float pitchAmount = .025f)
         {
-            //Null Check
             var audioObject = GetAudioByName(audioName);
             
             if (audioObject.AudioClip == null) return;
@@ -279,13 +255,13 @@ namespace Project._Scripts.Library.Audio.Manager
         #endregion
 
     }
-#region Audio Class
+    #region Audio Class
 
-    [System.Serializable]
+    [Serializable]
     public class Audio
     {
         public string AudioName;
         public AudioData AudioData;
     }
-#endregion
+    #endregion
 }

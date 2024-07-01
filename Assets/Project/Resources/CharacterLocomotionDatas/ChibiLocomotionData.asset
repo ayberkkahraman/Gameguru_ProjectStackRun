@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: ChibiLocomotionData
   m_EditorClassIdentifier: 
   MovementSpeed: 3
-  TransitionSpeed: 1
+  TransitionSpeed: 0.1

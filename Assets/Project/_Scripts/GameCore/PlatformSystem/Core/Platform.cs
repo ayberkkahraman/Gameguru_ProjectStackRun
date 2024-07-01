@@ -95,7 +95,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       Destroy(this);
     }
     
-    public void IncreaseScale() => transform.DOScaleX
+    public void IncreasePlatformScale() => transform.DOScaleX
       (
         GetScaleAmount() + transform.localScale.x, 
         PlatformController.SPlatformControllerData.SnapDuration

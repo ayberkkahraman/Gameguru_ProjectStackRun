@@ -1,5 +1,4 @@
-﻿using System;
-using Project._Scripts.Global.ScriptableObjects;
+﻿using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.CharacterController.AnimationPlayer
