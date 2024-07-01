@@ -12,6 +12,7 @@ namespace Project._Scripts.GameCore.CharacterController.AnimationPlayer
 
     #region Animation Parameters
     private static readonly int Dance = Animator.StringToHash("Dance");
+    private static readonly int IsMoving = Animator.StringToHash("IsMoving");
     #endregion
 
     #region Unity Functions
@@ -22,12 +23,25 @@ namespace Project._Scripts.GameCore.CharacterController.AnimationPlayer
 
     #region Initialization /DeInitialization
     private void InitializeComponents() => _animator = GetComponent<Animator>();
-    private void InitializeDelegates() => GameManagerData.OnLevelSuccessHandler += PlayDanceAnimation;
-    private void DeInitializeDelegates() => GameManagerData.OnLevelSuccessHandler -= PlayDanceAnimation;
+    private void InitializeDelegates()
+    {
+      GameManagerData.OnGameStartedHandler += () => PlayMoveAnimation(true);
+      GameManagerData.OnLevelSuccessHandler += PlayDanceAnimation;
+    }
+    private void DeInitializeDelegates()
+    {
+      GameManagerData.OnGameStartedHandler -= () => PlayMoveAnimation(true);
+      GameManagerData.OnLevelSuccessHandler -= PlayDanceAnimation;
+    }
     #endregion
 
     #region Animation Behaviours
-    public void PlayDanceAnimation() => _animator.SetTrigger(Dance);
+    public void PlayDanceAnimation()
+    {
+      PlayMoveAnimation(false);
+      _animator.SetTrigger(Dance);
+    }
+    public void PlayMoveAnimation(bool condition) => _animator.SetBool(IsMoving, condition);
     #endregion
     
   }

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe1e4c92cfe54ec0aaee04c865cc6af0, type: 3}
   m_Name: ColorEventData
   m_EditorClassIdentifier: 
-  TimeStep: 20
+  TimeStep: 10

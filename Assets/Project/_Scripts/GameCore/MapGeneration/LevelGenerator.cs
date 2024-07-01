@@ -74,7 +74,7 @@ namespace Project._Scripts.GameCore.MapGeneration
       Destroy(CurrentFinish);
       
       GameManagerData.OnGameStartedHandler();
-      PlatformController.OnPlatformSpawnedHandler();
+      PlatformController.OnPlatformSpawnedHandler(true);
       
       
       _generateLevelHandler?.Invoke(position);

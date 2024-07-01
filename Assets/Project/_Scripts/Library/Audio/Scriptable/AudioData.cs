@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace Project._Scripts.Library.Audio.Scriptable
 {
-    [CreateAssetMenu(fileName = "AudioData", menuName = "Game/Audio")]
+    [CreateAssetMenu(fileName = "AudioData", menuName = "Library/Audio/AudioData")]
     public class AudioData : ScriptableObject
     {
-    #region Childs
+        #region References
         public AudioClip AudioClip;
-    #endregion
+        #endregion
     
-    #region Fields
+        #region Fields
         [Header("Attributes")]
         public AudioType Type;
         [Range(0,1f)]public float Volume = .5f;
@@ -24,6 +24,6 @@ namespace Project._Scripts.Library.Audio.Scriptable
             SecondarySfx,
             Effect
         }
-    #endregion
+        #endregion
     }
 }

@@ -38,7 +38,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     public delegate void OnPlatformKilled(Platform platform);
     public static OnPlatformKilled OnPlatformKilledHandler;
    
-    public delegate void OnPlatformSpawned(float scale = 0f);
+    public delegate void OnPlatformSpawned(bool reset = false, float scale = 0f);
     public static OnPlatformSpawned OnPlatformSpawnedHandler;
     #endregion
 
@@ -58,34 +58,27 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       SnappedPlatformCount = 0;
       ColorEventData.CurrentColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
      
-      OnPlatformSpawnedHandler += SpawnPlatform;
+      OnPlatformSpawnedHandler += (reset,_) => SpawnPlatform(reset);
       
       OnPlatformKilledHandler += KillPlatform;
       OnPlatformKilledHandler += (_) => LevelGenerator.IncreasePlatformCount();
 
       OnPlatformSnappedHandler += (_) => IncreaseSnappedPlatformCount();
       OnPlatformSnappedHandler += CheckSnappedPlatforms;
-      OnPlatformSnappedHandler += (_) => PlayAudio();
-
-      // GameManagerData.OnLevelSuccessHandler += () => Destroy(this);
     }
 
     private void DeInitialize()
     {
-      OnPlatformKilledHandler -= KillPlatform;
-      OnPlatformKilledHandler += (_) => LevelGenerator.IncreasePlatformCount();
-      
-      OnPlatformSpawnedHandler -= SpawnPlatform;
-      
-      // GameManagerData.OnLevelSuccessHandler -= () => Destroy(this);
+      OnPlatformKilledHandler = null;
+      OnPlatformSpawnedHandler = null;
+      OnPlatformSnappedHandler = null;
     }
     #endregion
 
     #region Platform Handling
-    private void SpawnPlatform(float scale = 0f)
+    private void SpawnPlatform(bool reset = false, float scale = 0f)
     {
       if(!LevelGenerator.CanGeneratePlatform) return;
-
       
       PreviousPlatform = transform.GetChild(0);
       
@@ -103,9 +96,17 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
         Quaternion.identity, 
         transform
       );
-      ColorEventData.SetNextColor(platform.Material);
+
+      if (!reset) ColorEventData.SetNextColor(platform.Material);
+      else
+      {
+        ColorEventData.CurrentColor = ColorEventData.RandomColor();
+        ColorEventData.TargetColor = ColorEventData.RandomColor();
+        platform.Material.color = ColorEventData.CurrentColor;
+      }
     
-      platform.transform.localScale = new Vector3(
+      platform.transform.localScale = reset ? PlatformControllerData.PlatformPrefab.transform.localScale 
+        : new Vector3(
         PreviousPlatform.localScale.x + scale, 
         PlatformControllerData.PlatformPrefab.transform.localScale.y, 
         PlatformControllerData.PlatformPrefab.transform.localScale.z
@@ -130,8 +131,6 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       if (SnappedPlatformCount < PlatformControllerData.SnapCombo) return; 
       platform.IncreaseScale();
     }
-
-    internal void PlayAudio(){}
     #endregion
   }
 }

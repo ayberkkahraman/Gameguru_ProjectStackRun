@@ -1,15 +1,16 @@
 ﻿using DG.Tweening;
 using Project._Scripts.GameCore.PlatformSystem.System;
 using Project._Scripts.Global.Manager.Core;
-using Project._Scripts.Library.Audio.Manager;
+using Project._Scripts.Library.Audio.Interfaces;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.PlatformSystem.Core
 {
-  public class Platform : MonoBehaviour
+  public class Platform : MonoBehaviour, IAudioOwner
   {
     #region Components
     public Material Material { get; set; }
+    public IAudioOwner AudioOwner { get; set; }
     #endregion
     
     #region Fields
@@ -24,7 +25,11 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
     #endregion
 
     #region Initialization
-    private void InitializationComponents() => Material = GetComponent<MeshRenderer>().material;
+    private void InitializationComponents()
+    {
+      AudioOwner = this;
+      Material = GetComponent<MeshRenderer>().material;
+    }
     #endregion
 
     #region Platform Behaviour
@@ -42,19 +47,19 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
 
       if (Mathf.Abs(distance) <= PlatformController.SPlatformControllerData.SnapTolerance)
       {
-        ManagerCore.Instance.GetInstance<AudioManager>().PlayAudio("MusicNote", true, .1f);
+        AudioOwner.Play("MusicNote", true, .1f);
         SnapPlatform();
       }
 
       else
       {
-        ManagerCore.Instance.GetInstance<AudioManager>().PlayAudio("MusicNote", false);
+        AudioOwner.Play("MusicNote", false, .1f);
         PlatformController.SnappedPlatformCount = 0;
         RescalePlatform(distance);
         SpawnFallingPlatform(distance);
       }
 
-      PlatformController.OnPlatformSpawnedHandler(PlatformController.IsComboActive ? GetScaleAmount() : 0f);
+      PlatformController.OnPlatformSpawnedHandler(false, PlatformController.IsComboActive ? GetScaleAmount() : 0f);
     }
     
     public void SnapPlatform()

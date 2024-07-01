@@ -40,14 +40,14 @@ namespace Project._Scripts.GameCore.CharacterController.Core
 
     private void InitializeDelegates()
     {
-      PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
+      PlatformController.OnPlatformSpawnedHandler += (_,_) => TranslateCharacter();
       GameManagerData.OnLevelSuccessHandler += () => CanMove = false;
       GameManagerData.OnGameStartedHandler += () => CanMove = true;
       GameManagerData.OnGameStartedHandler += () => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(transform);
     }
     private void DeInitializeDelegates()
     {
-      PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
+      PlatformController.OnPlatformSpawnedHandler -= (_,_) => TranslateCharacter();
       GameManagerData.OnLevelSuccessHandler -= () => CanMove = false;
       GameManagerData.OnGameStartedHandler -= () => CanMove = true;
       GameManagerData.OnGameStartedHandler -= () => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(transform);
