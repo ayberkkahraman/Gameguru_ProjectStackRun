@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace Project._Scripts.Global.Manager.ManagerClasses
 {
-    [DefaultExecutionOrder(720)]
     public class CameraManager : MonoBehaviour
     {
         #region Cameras

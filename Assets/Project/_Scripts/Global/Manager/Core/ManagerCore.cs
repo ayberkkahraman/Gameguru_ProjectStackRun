@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Project._Scripts.Global.Manager.Core
 {
-  [DefaultExecutionOrder(560)]
+
   public sealed class ManagerCore : MonoBehaviour{
   #region Fields
     public bool DestroyOnLoad = true;

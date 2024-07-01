@@ -1,18 +1,20 @@
 ﻿using Project._Scripts.GameCore.InteractionSystem.Interactables.Core;
-using Project._Scripts.GameCore.PlatformSystem.System;
 using Project._Scripts.GameCore.Primitives;
 using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Global.Manager.ManagerClasses;
 using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Zenject;
 
 namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Elements
 {
   public class Finish : InteractableBase
   {
     public Rotator CharacterPositionReference { get; set; }
+    
     private CameraManager _cameraManager;
+    [Inject]
+    public void Construct(CameraManager cameraManager) => _cameraManager = cameraManager;
 
     private void Awake()
     {
@@ -25,7 +27,6 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Elements
       
       GameManagerData.OnLevelSuccessHandler();
 
-      // _rotator.transform.position = new Vector3(_cameraManager.CharacterCamera.Follow.position.x, transform.position.y, transform.position.z);
       CharacterPositionReference.transform.parent = _cameraManager.CharacterCamera.Follow;
       CharacterPositionReference.transform.localPosition = Vector3.zero;
       

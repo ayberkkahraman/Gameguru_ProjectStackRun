@@ -1,10 +1,8 @@
 ﻿using DG.Tweening;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.System;
-using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Library.Audio.Interfaces;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Project._Scripts.GameCore.PlatformSystem.Core
 {

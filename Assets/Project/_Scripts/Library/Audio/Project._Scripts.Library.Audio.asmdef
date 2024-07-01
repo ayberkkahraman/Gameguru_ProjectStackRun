@@ -1,0 +1,16 @@
+{
+    "name": "Project._Scripts.Library.Audio",
+    "rootNamespace": "",
+    "references": [
+        "GUID:9280d0cd52fa97a4399343fa850651ac"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
