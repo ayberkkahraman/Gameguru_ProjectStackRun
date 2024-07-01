@@ -3,9 +3,6 @@ using Project._Scripts.GameCore.MapGeneration;
 using Project._Scripts.GameCore.PlatformSystem.Core;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
-using Project._Scripts.Global.Manager.Core;
-using Project._Scripts.Global.Manager.ManagerClasses;
-using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.PlatformSystem.System
@@ -70,7 +67,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       OnPlatformSnappedHandler += CheckSnappedPlatforms;
       OnPlatformSnappedHandler += (_) => PlayAudio();
 
-      GameManagerData.OnLevelSuccessHandler += () => Destroy(this);
+      // GameManagerData.OnLevelSuccessHandler += () => Destroy(this);
     }
 
     private void DeInitialize()
@@ -80,7 +77,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       
       OnPlatformSpawnedHandler -= SpawnPlatform;
       
-      GameManagerData.OnLevelSuccessHandler -= () => Destroy(this);
+      // GameManagerData.OnLevelSuccessHandler -= () => Destroy(this);
     }
     #endregion
 
@@ -110,8 +107,8 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     
       platform.transform.localScale = new Vector3(
         PreviousPlatform.localScale.x + scale, 
-        PreviousPlatform.localScale.y, 
-        PreviousPlatform.localScale.z
+        PlatformControllerData.PlatformPrefab.transform.localScale.y, 
+        PlatformControllerData.PlatformPrefab.transform.localScale.z
       );
     
       platform.transform.SetSiblingIndex(0);

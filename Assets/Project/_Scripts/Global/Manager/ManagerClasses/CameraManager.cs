@@ -8,7 +8,8 @@ using UnityEngine;
 
 namespace Project._Scripts.Global.Manager.ManagerClasses
 {
-public class CameraManager : MonoBehaviour
+    [DefaultExecutionOrder(720)]
+    public class CameraManager : MonoBehaviour
     {
         #region Cameras
         public CinemachineVirtualCamera DefaultCam{ get; set; }
@@ -28,7 +29,7 @@ public class CameraManager : MonoBehaviour
         public float ShakeDuration = .1f;
         #endregion
 
-    #region Unity Functions
+        #region Unity Functions
         private void OnEnable()
         {
             Init();
@@ -38,10 +39,10 @@ public class CameraManager : MonoBehaviour
         {
             DeInit();
         }
-    #endregion
+        #endregion
 
     
-    #region Init
+        #region Init
         public void Init()
         {
             //Setting the cinemachine cameras for the list to be let it accessible
@@ -56,7 +57,8 @@ public class CameraManager : MonoBehaviour
             {
                 ShakeCamera(4.5f, .35f, .1f);
             };
-            
+
+            GameManagerData.OnGameStartedHandler += () => ChangeActiveCamera(CharacterCamera);
         }
 
         private void DeInit()
@@ -66,10 +68,12 @@ public class CameraManager : MonoBehaviour
             {
                 ShakeCamera(8f, 1f, .075f);
             };
+            
+            GameManagerData.OnGameStartedHandler -= () => ChangeActiveCamera(CharacterCamera);
         }
-    #endregion
+        #endregion
     
-    #region Camera
+        #region Camera
 
         /// <summary>
         /// Changes the current active camera in a spesific time
@@ -85,11 +89,11 @@ public class CameraManager : MonoBehaviour
                 cinemachineVirtualCamera.Priority = 0;
             }
 
-            DefaultCam.Priority = 0;
+            CurrentCamera.Priority = 0;
             targetCamera.Priority = 10;
 
             CurrentCamera = targetCamera;
-            CharacterCamera = CurrentCamera as CinemachineVirtualCamera;
+   
             DefaultCam = CharacterCamera;
             CinemachineBasicMultiChannelPerlin = DefaultCam != null ? DefaultCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>() : null;
             //-----------------------------------------------
@@ -118,6 +122,8 @@ public class CameraManager : MonoBehaviour
     
         public void ShakeCamera(float intensity, float duration, float frequencyGain = 0f)
         {
+            if(CurrentCamera != CharacterCamera) return;
+            
             StartCoroutine(ShakeCameraCoroutine(intensity, duration, frequencyGain));
         }
         
@@ -177,6 +183,5 @@ public class CameraManager : MonoBehaviour
             CinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 0f;
         }
         #endregion
-    
     }
 }

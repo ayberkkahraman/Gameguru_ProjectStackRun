@@ -42,13 +42,15 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     {
       PlatformController.OnPlatformSpawnedHandler += (_) => TranslateCharacter();
       GameManagerData.OnLevelSuccessHandler += () => CanMove = false;
-      GameManager.OnGameStartedHandler += () => CanMove = true;
+      GameManagerData.OnGameStartedHandler += () => CanMove = true;
+      GameManagerData.OnGameStartedHandler += () => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(transform);
     }
     private void DeInitializeDelegates()
     {
       PlatformController.OnPlatformSpawnedHandler -= (_) => TranslateCharacter();
       GameManagerData.OnLevelSuccessHandler -= () => CanMove = false;
-      GameManager.OnGameStartedHandler -= () => CanMove = true;
+      GameManagerData.OnGameStartedHandler -= () => CanMove = true;
+      GameManagerData.OnGameStartedHandler -= () => ManagerCore.Instance.GetInstance<CameraManager>().UpdateFollowTarget(transform);
     }
 
     private void InitializeLocomotion() => _movementSpeed = CharacterLocomotionData.MovementSpeed;

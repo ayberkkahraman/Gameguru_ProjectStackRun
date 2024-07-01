@@ -5,17 +5,18 @@ using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Global.Manager.ManagerClasses;
 using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Elements
 {
   public class Finish : InteractableBase
   {
-    private Rotator _rotator;
+    public Rotator CharacterPositionReference { get; set; }
     private CameraManager _cameraManager;
 
     private void Awake()
     {
-      _rotator = GetComponentInChildren<Rotator>();
+      CharacterPositionReference = GetComponentInChildren<Rotator>();
       _cameraManager = ManagerCore.Instance.GetInstance<CameraManager>();
     }
     public override void StartInteraction()
@@ -25,14 +26,14 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Elements
       GameManagerData.OnLevelSuccessHandler();
 
       // _rotator.transform.position = new Vector3(_cameraManager.CharacterCamera.Follow.position.x, transform.position.y, transform.position.z);
-      _rotator.transform.parent = _cameraManager.CharacterCamera.Follow;
-      _rotator.transform.localPosition = Vector3.zero;
+      CharacterPositionReference.transform.parent = _cameraManager.CharacterCamera.Follow;
+      CharacterPositionReference.transform.localPosition = Vector3.zero;
       
-      _cameraManager.LevelEndCamera.Follow = (_rotator.transform);
-      _cameraManager.LevelEndCamera.LookAt = (_rotator.transform);
+      _cameraManager.LevelEndCamera.Follow = (CharacterPositionReference.transform);
+      _cameraManager.LevelEndCamera.LookAt = (CharacterPositionReference.transform);
       _cameraManager.ChangeActiveCamera(_cameraManager.LevelEndCamera);
       
-      _rotator.Rotate();
+      CharacterPositionReference.Rotate();
     }
   }
 }

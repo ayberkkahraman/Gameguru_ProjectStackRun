@@ -7,6 +7,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.ScriptableObjects
   public class PlatformControllerData : ScriptableObject
   {
     public Platform PlatformPrefab;
+    [Range(0f, 5f)] public float PlatformTransitionDuration = 1.5f;
     [Range(1, 10)]public int SnapCombo = 3;
     [Space]
     [Header("Attributes")]

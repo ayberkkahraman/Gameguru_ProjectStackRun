@@ -1,14 +1,10 @@
-﻿using System;
+﻿using Project._Scripts.Global.ScriptableObjects;
 using UnityEngine;
-using Random = UnityEngine.Random;
-
 namespace Project._Scripts.Global.Manager.ManagerClasses
 {
   [DefaultExecutionOrder(960)]
   public class GameManager : MonoBehaviour
   {
-    public delegate void OnGameStarted();
-    public static OnGameStarted OnGameStartedHandler;
-    public void Start() => OnGameStartedHandler();
+    public void Start() => GameManagerData.OnGameStartedHandler();
   }
 }

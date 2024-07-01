@@ -1,10 +1,8 @@
-﻿using System;
-using DG.Tweening;
-using Project._Scripts.GameCore.MapGeneration;
-using Project._Scripts.GameCore.PlatformSystem.EventDatas;
+﻿using DG.Tweening;
 using Project._Scripts.GameCore.PlatformSystem.System;
+using Project._Scripts.Global.Manager.Core;
+using Project._Scripts.Library.Audio.Manager;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Project._Scripts.GameCore.PlatformSystem.Core
 {
@@ -15,7 +13,6 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
     #endregion
     
     #region Fields
-    [Range(1f,5f)]public float TransitionDuration = 2f;
     public Tweener TransitionTween { get; set; }
 
     private float _scaleAmount;
@@ -33,7 +30,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
     #region Platform Behaviour
     public void RunPlatform()
     {
-      TransitionTween = transform.DOMoveX(-transform.position.x, TransitionDuration)
+      TransitionTween = transform.DOMoveX(-transform.position.x, PlatformController.SPlatformControllerData.PlatformTransitionDuration)
         .SetEase(Ease.Linear)
         .SetLoops(-2, LoopType.Yoyo)
         .OnKill(KillPlatform);
@@ -45,11 +42,13 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
 
       if (Mathf.Abs(distance) <= PlatformController.SPlatformControllerData.SnapTolerance)
       {
+        ManagerCore.Instance.GetInstance<AudioManager>().PlayAudio("MusicNote", true, .1f);
         SnapPlatform();
       }
 
       else
       {
+        ManagerCore.Instance.GetInstance<AudioManager>().PlayAudio("MusicNote", false);
         PlatformController.SnappedPlatformCount = 0;
         RescalePlatform(distance);
         SpawnFallingPlatform(distance);
