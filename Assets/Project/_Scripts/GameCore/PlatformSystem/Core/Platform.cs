@@ -1,8 +1,10 @@
 ﻿using DG.Tweening;
+using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.System;
 using Project._Scripts.Global.Manager.Core;
 using Project._Scripts.Library.Audio.Interfaces;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Project._Scripts.GameCore.PlatformSystem.Core
 {
@@ -16,7 +18,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
     #region Fields
     public Tweener TransitionTween { get; set; }
 
-    private float _scaleAmount;
+    public float ScaleAmount => GetScaleAmount();
     #endregion
 
     #region Unity Functions
@@ -96,6 +98,20 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
         PlatformController.SPlatformControllerData.SnapDuration
         )
       .SetEase(PlatformController.SPlatformControllerData.ScaleCurve);
+    
+    public void SetPlatformColor(bool reset)
+    {
+      if (reset)
+      {
+        ColorEventData.CurrentColor = ColorEventData.RandomColor();
+        ColorEventData.TargetColor = ColorEventData.RandomColor();
+        Material.color = ColorEventData.CurrentColor;
+      }
+      else
+      {
+        ColorEventData.SetNextColor(Material);
+      }
+    }
     #endregion
 
     #region Neccessary Calculations

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Project._Scripts.Global.ScriptableObjects;
 using Project._Scripts.Library.Audio.Scriptable;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -39,6 +40,16 @@ namespace Project._Scripts.Library.Audio.Manager
             InitializeAudioResources();
         }
 
+        private void OnEnable()
+        {
+            GameManagerData.OnGameStartedHandler += () => ResetPitch(true);
+        }
+
+        private void OnDisable()
+        {
+            GameManagerData.OnGameStartedHandler += () => ResetPitch(true);
+        }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.A))
@@ -54,8 +65,12 @@ namespace Project._Scripts.Library.Audio.Manager
         }
         #endregion
 
-        public static void ResetPitch() => IncrementalPitchCounter = 0;
-        public static void IncreasePitch() => IncrementalPitchCounter++;
+        public static void ResetPitch(bool initial) => IncrementalPitchCounter = initial ? -1 : 0;
+        public static void IncreasePitch()
+        {
+            if(IncrementalPitchCounter < 10)
+                IncrementalPitchCounter++;
+        }
 
         #region Audio Interactions
 
@@ -175,18 +190,19 @@ namespace Project._Scripts.Library.Audio.Manager
 
             //Get the audio source
             AudioSource source = GetAvailableAudioSource(audioObject.Type);
+            
+            if(isIncrementing)IncreasePitch();
+            else ResetPitch(false);
 
             //-----------------------------------AUDIO SETTINGS-----------------------------------------
             source.clip = audioObject.AudioClip;
-            source.pitch = isIncrementing ? 1 + ((IncrementalPitchCounter) * pitchAmount) : 1 + Random.Range(audioObject.PitchVariation, -audioObject.PitchVariation);
+            source.pitch = isIncrementing ? 1 + ((IncrementalPitchCounter) * pitchAmount) : 1;
             source.volume = audioObject.Volume;
             //------------------------------------------------------------------------------------------
 
+            
             //Play audio
             source.Play();
-            
-            if(isIncrementing)IncreasePitch();
-            else ResetPitch();
         }
   
         #endregion

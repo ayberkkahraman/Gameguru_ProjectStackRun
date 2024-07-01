@@ -1,9 +1,9 @@
 ﻿using DG.Tweening;
-using Project._Scripts.GameCore.MapGeneration;
 using Project._Scripts.GameCore.MapGeneration.System;
 using Project._Scripts.GameCore.PlatformSystem.Core;
 using Project._Scripts.GameCore.PlatformSystem.EventDatas;
 using Project._Scripts.GameCore.PlatformSystem.ScriptableObjects;
+using Project._Scripts.Global.SubSystem;
 using UnityEngine;
 
 namespace Project._Scripts.GameCore.PlatformSystem.System
@@ -79,47 +79,53 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     #region Platform Handling
     private void SpawnPlatform(bool reset = false, float scale = 0f)
     {
-      if(!LevelGenerator.CanGeneratePlatform) return;
+      if (!LevelGenerator.CanGeneratePlatform) return;
+
+      Platform platform = NewPlatform(reset, scale);
       
-      PreviousPlatform = transform.GetChild(0);
+      platform.SetPlatformColor(reset);
+
+      PreviousPlatform = transform.GetChild(1);
+      CurrentPlatform = platform;
+      _platformCount++;
+    }
+
+    private Platform NewPlatform(bool reset, float scale)
+    {
+      Transform previousPlatformTransform = transform.GetChild(0);
+      previousPlatformTransform.TryGetComponent(out Platform previousPlatform);
       
       int multiplier = (_platformCount % 2 == 0) ? 1 : -1;
-    
+
       Vector3 position = new Vector3(
-        multiplier * -6f, 
-        PreviousPlatform.position.y, 
-        PreviousPlatform.position.z + PreviousPlatform.localScale.z
+        multiplier * -6f,
+        previousPlatformTransform.position.y,
+        previousPlatformTransform.position.z + previousPlatformTransform.localScale.z
       );
-    
+
+      var comboScale = previousPlatform is not null ? (IsComboActive ? previousPlatform.ScaleAmount : 0f) : 0f;
+      
+      Vector3 newScale = reset
+        ? PlatformControllerData.PlatformPrefab.transform.localScale
+        : new Vector3(
+          previousPlatformTransform.localScale.x + scale + comboScale,
+          PlatformControllerData.PlatformPrefab.transform.localScale.y,
+          PlatformControllerData.PlatformPrefab.transform.localScale.z
+        );
+
       Platform platform = Instantiate(
-        PlatformControllerData.PlatformPrefab, 
-        position, 
-        Quaternion.identity, 
+        PlatformControllerData.PlatformPrefab,
+        position,
+        Quaternion.identity,
         transform
       );
 
-      if (!reset) ColorEventData.SetNextColor(platform.Material);
-      else
-      {
-        ColorEventData.CurrentColor = ColorEventData.RandomColor();
-        ColorEventData.TargetColor = ColorEventData.RandomColor();
-        platform.Material.color = ColorEventData.CurrentColor;
-      }
-    
-      platform.transform.localScale = reset ? PlatformControllerData.PlatformPrefab.transform.localScale 
-        : new Vector3(
-        PreviousPlatform.localScale.x + scale, 
-        PlatformControllerData.PlatformPrefab.transform.localScale.y, 
-        PlatformControllerData.PlatformPrefab.transform.localScale.z
-      );
-    
+      platform.transform.localScale = newScale;
       platform.transform.SetSiblingIndex(0);
-    
-      PreviousPlatform = transform.GetChild(1);
-      CurrentPlatform = platform;
-
-      _platformCount++;
+      
+      return platform;
     }
+    
     internal void KillPlatform(Platform platform) => platform.TransitionTween.Kill();
     #endregion
 
