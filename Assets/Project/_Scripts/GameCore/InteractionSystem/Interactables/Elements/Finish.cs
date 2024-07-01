@@ -12,6 +12,7 @@ namespace Project._Scripts.GameCore.InteractionSystem.Interactables.Elements
     public CameraManager CameraManager { get; set; }
     public Rotator CharacterPositionReference { get; set; }
     private void Awake() => CharacterPositionReference = GetComponentInChildren<Rotator>();
+    private void Start() => IsInteractable = false;
     public override void StartInteraction()
     {
       base.StartInteraction();

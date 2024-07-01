@@ -21,7 +21,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
 
     #region Unity Functions
     private void Awake() => InitializationComponents();
-    private void Start() => RunPlatform();
+    // private void Start() => RunPlatform();
     #endregion
 
     #region Initialization
@@ -89,10 +89,8 @@ namespace Project._Scripts.GameCore.PlatformSystem.Core
       platform.transform.position = new Vector3(transform.position.x + multiplier*transform.localScale.x/2 + (differenceXPosition/2), transform.position.y, transform.position.z);
 
       platform.GetComponent<MeshRenderer>().material.color = Material.color;
+      platform.AddComponent<BoxCollider>().isTrigger = true;
       platform.AddComponent<Rigidbody>();
-      
-      
-      Destroy(this);
     }
     
     public void IncreasePlatformScale() => transform.DOScaleX

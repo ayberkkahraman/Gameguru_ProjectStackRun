@@ -13,8 +13,13 @@ namespace Project._Scripts.GameCore.MapGeneration.System
   {
     #region Depencency Injection
     public CameraManager CameraManager { get; set; }
+    private PoolManager _poolManager;
     [Inject]
-    public void Construct(CameraManager cameraManager) => CameraManager = cameraManager;
+    public void Construct(CameraManager cameraManager, PoolManager poolManager)
+    {
+      CameraManager = cameraManager;
+      _poolManager = poolManager;
+    }
     #endregion
 
     #region Fields
@@ -23,6 +28,7 @@ namespace Project._Scripts.GameCore.MapGeneration.System
     public static Finish SCurrentFinish;
     
     public Vector2Int PlatformCountLimits;
+    private int _finishObstacleCount;
     
     public static int PlatformCount;
     public static int CurrentPlatformCount;
@@ -60,9 +66,11 @@ namespace Project._Scripts.GameCore.MapGeneration.System
     #region Level Generation
     private void GenerateFinishObstacle(Vector3 position)
     {
-      CurrentFinish = Instantiate(FinishObstaclePrefab, position, Quaternion.identity);
+      CurrentFinish = _poolManager.SpawnFromPool<Finish>("Finish",position, Quaternion.identity);
+      // CurrentFinish = Instantiate(FinishObstaclePrefab, position, Quaternion.identity);
       SCurrentFinish = CurrentFinish;
       CurrentFinish.CameraManager = CameraManager;
+      _finishObstacleCount++;
     }
     
     public void UIF_GenerateLevel()

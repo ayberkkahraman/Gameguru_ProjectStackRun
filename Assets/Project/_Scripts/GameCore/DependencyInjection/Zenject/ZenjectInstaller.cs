@@ -10,6 +10,7 @@ namespace Project._Scripts.GameCore.DependencyInjection.Zenject
     {
       Container.Bind<CameraManager>().FromComponentInHierarchy().AsSingle();
       Container.Bind<PlatformController>().FromComponentInHierarchy().AsSingle();
+      Container.Bind<PoolManager>().FromComponentInHierarchy().AsSingle();
     }
   }
 }
