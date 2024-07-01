@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cinemachine;
@@ -33,9 +32,8 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
 
         private void OnDisable() => DeInit();
         #endregion
-
-    
-        #region Init
+        
+        #region Init / DeInit
         public void Init()
         {
             //Setting the cinemachine cameras for the list to be let it accessible
@@ -66,7 +64,7 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
         }
         #endregion
     
-        #region Camera
+        #region Camera Behaviours
 
         /// <summary>
         /// Changes the current active camera in a spesific time
@@ -93,13 +91,15 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
         }
 
         /// <summary>
-        /// Updates the follow transform of the Camera
+        /// Updates the Follow transform of the Camera
         /// </summary>
         /// <param name="targetTransform"></param>
         public void UpdateFollowTarget(Transform targetTransform) => CurrentCamera.Follow = targetTransform;
+        /// <summary>
+        /// Updates the LookAt transform of the camera
+        /// </summary>
+        /// <param name="targetTransform"></param>
         public void UpdateLookAtTarget(Transform targetTransform) => CurrentCamera.LookAt = targetTransform;
-        public static void ShakeCamera(Action action) => action?.Invoke();
-        public void ShakeCamera() => StartCoroutine(ShakeCameraCoroutine(ShakeIntensity, ShakeDuration));
     
         public void ShakeCamera(float intensity, float duration, float frequencyGain = 0f)
         {
@@ -127,6 +127,7 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
             StartCoroutine(SmoothReturnToZero(duration/3));
         }
         
+        //------------------------------------------SMOOTH AMPLITUDE LERPING------------------------------------------
         public IEnumerator SmoothIncreaseAmplitude(float duration, float targetValue)
         {
             float startTime = Time.time;
@@ -163,6 +164,7 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
             
             CinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 0f;
         }
+        //--------------------------------------------------------------------------------------------------
         #endregion
     }
 }

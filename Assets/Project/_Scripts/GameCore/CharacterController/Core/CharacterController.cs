@@ -69,6 +69,9 @@ namespace Project._Scripts.GameCore.CharacterController.Core
     #endregion
     
     #region Character Movement Behaviour
+    /// <summary>
+    /// Moves the character
+    /// </summary>
     private void MoveCharacter() => _rigidbody.MovePosition(_rigidbody.position + transform.forward * (_movementSpeed * Time.deltaTime));
     private void TranslateCharacter(Transform platform) => StartCoroutine(TranslateCharacterCoroutine(platform));
     

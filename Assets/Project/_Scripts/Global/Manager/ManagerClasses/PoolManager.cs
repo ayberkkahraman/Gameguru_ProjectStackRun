@@ -6,13 +6,13 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
    [DefaultExecutionOrder(560)]
    public class PoolManager : MonoBehaviour
    {
-   #region Fields
+      #region Fields
       [System.Serializable]
       public class Pool
       {
          public string ObjectName;
          public GameObject Object;
-         public List<GameObject> Objects = new();
+         public List<GameObject> Objects { get; set; }
          public Transform ObjectHolder;
          public int PoolSize;
       }
@@ -20,9 +20,9 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
       public List<Pool> Pools;
       public static Dictionary<string, Queue<GameObject>> SPoolDictionary;
 
+      #endregion
 
-   #endregion
-
+      #region Unity Functions
       public void Start()
       {
          //Initializer
@@ -37,7 +37,10 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
                GameObject poolObject = Instantiate(pool.Object, pool.ObjectHolder);
                poolObject.name = pool.ObjectName;
 
-               pool.Objects.Add(poolObject);
+               pool.Objects = new List<GameObject>
+               {
+                  poolObject
+               };
 
                poolObject.SetActive(false);
 
@@ -48,7 +51,9 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
             SPoolDictionary.Add(pool.ObjectName, objectPool);
          }
       }
-
+      #endregion
+      
+      #region Pooling Behaviours
       /// <summary>
       /// Spawning the object as type of GameObject with given Transform data
       /// </summary>
@@ -102,7 +107,6 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
       /// Disables the object and returns it to the pool
       /// </summary>
       /// <param name="poolObject"></param>
-      /// <param name="type"></param>
       public void DestroyPoolObject<T>(T poolObject) where T : MonoBehaviour
       {
          poolObject.gameObject.SetActive(false);
@@ -115,5 +119,6 @@ namespace Project._Scripts.Global.Manager.ManagerClasses
 
          SPoolDictionary[pool.ObjectName].Enqueue(poolObject.gameObject);
       }
+      #endregion
    }
 }

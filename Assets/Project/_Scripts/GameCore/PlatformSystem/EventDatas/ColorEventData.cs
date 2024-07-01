@@ -8,8 +8,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.EventDatas
   public class ColorEventData : EventData
   {
     #region Fields
-    [Range(1, 20)]public int TimeStep = 10;
-    
+    [Range(1, 20)]public int TimeStep = 10; //The setting of transition speed between target color and the current color
     public static int STimeStep{ get; set; }
     public static Color CurrentColor { get; set; }
     public static Color TargetColor{ get; set; }
@@ -26,6 +25,9 @@ namespace Project._Scripts.GameCore.PlatformSystem.EventDatas
     #endregion
 
     #region Color Behaviours
+    /// <summary>
+    /// Generates a new color for the materials
+    /// </summary>
     public static void SetTargetColor()
     {
       TargetColor = RandomColor();
@@ -34,6 +36,10 @@ namespace Project._Scripts.GameCore.PlatformSystem.EventDatas
       _colorChangeAmountOnStep.y = (TargetColor.g - CurrentColor.g) / STimeStep;
       _colorChangeAmountOnStep.z = (TargetColor.b - CurrentColor.b) / STimeStep;
     }
+    /// <summary>
+    /// Handles specify the next step of the current color
+    /// </summary>
+    /// <param name="material"></param>
     public static void SetNextColor(Material material)
     {
       if (Vector4.Distance(CurrentColor, TargetColor) < 0.1f) SetTargetColor();
@@ -45,6 +51,10 @@ namespace Project._Scripts.GameCore.PlatformSystem.EventDatas
       material.color = CurrentColor;
     }
     
+    /// <summary>
+    /// Generates a random color
+    /// </summary>
+    /// <returns></returns>
     public static Color RandomColor() => new(Random.value, Random.value, Random.value);
     #endregion
   }

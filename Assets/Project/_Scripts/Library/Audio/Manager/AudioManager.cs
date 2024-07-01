@@ -65,99 +65,6 @@ namespace Project._Scripts.Library.Audio.Manager
 
 
         #region Audio Interactions
-
-        /// <summary>
-        /// Play Audio on UI Interaction
-        /// </summary>
-        public void UIF_PlayAudio(string audioName)
-        {
-            var audioData = GetAudioByName(audioName);
-            PlayAudio(audioData.AudioClip, audioData.Volume, audioData.PitchVariation, audioData.Type);
-        }
-
-        /// <summary>
-        /// Play audio clip with default settings
-        /// </summary>
-        /// <param name="clip"></param>
-        /// <param name="volume"></param>
-        /// <param name="pitchVariation"></param>
-        /// <param name="type"></param>
-        public void PlayAudio(AudioClip clip, float volume = 1f, float pitchVariation = 0f,
-            AudioData.AudioType type = AudioData.AudioType.Effect)
-        {
-            //Null Check
-            if (clip == null) return;
-
-            //Get the audio source
-            AudioSource source = GetAvailableAudioSource(type);
-
-            //----------------------AUDIO SETTINGS----------------------------
-            source.clip = clip;
-            source.pitch = 1 + Random.Range(-pitchVariation, pitchVariation);
-            source.volume = volume;
-            //----------------------------------------------------------------
-
-            //Play audio
-            source.Play();
-        }
-
-        /// <summary>
-        /// Play audio based on given audio object
-        /// </summary>
-        /// <param name="audioObject"></param>
-        public void PlayAudio(AudioData audioObject)
-        {
-            //Null Check
-            if (audioObject.AudioClip == null) return;
-
-            //Get the audio source
-            AudioSource source = GetAvailableAudioSource(audioObject.Type);
-
-            //-----------------------------------AUDIO SETTINGS-----------------------------------------
-            source.clip = audioObject.AudioClip;
-            source.pitch = 1 + Random.Range(audioObject.PitchVariation, -audioObject.PitchVariation);
-            source.volume = audioObject.Volume;
-            //------------------------------------------------------------------------------------------
-
-            //Play audio
-            source.Play();
-        }
-
-        public void PlayAudio(AudioData audioObject, float volume, float pitchVariation)
-        {
-            //Null Check
-            if (audioObject.AudioClip == null) return;
-
-            //Get the audio source
-            AudioSource source = GetAvailableAudioSource(audioObject.Type);
-
-            //-----------------------------------AUDIO SETTINGS-----------------------------------------
-            source.clip = audioObject.AudioClip;
-            source.pitch = 1 + Random.Range(pitchVariation, -pitchVariation);
-            source.volume = volume;
-            //------------------------------------------------------------------------------------------
-
-            //Play audio
-            source.Play();
-        }
-
-        /// <summary>
-        /// Play audio with name
-        /// </summary>
-        /// <param name="audioName"></param>
-        public void PlayAudio(string audioName)
-        {
-            var audioData = GetAudioByName(audioName);
-
-            if (audioData is null)
-            {
-                Debug.LogError($"There is not audio like{audioName}");
-                return;
-            }
-
-            PlayAudio(audioData);
-        }
-        
         public void PlayAudio(string audioName, bool isIncrementing, float pitchAmount = .025f)
         {
             var audioObject = GetAudioByName(audioName);
@@ -167,15 +74,17 @@ namespace Project._Scripts.Library.Audio.Manager
             //Get the audio source
             AudioSource source = GetAvailableAudioSource(audioObject.Type);
             
+            //Updates the pitch according to the incremental value
             if(isIncrementing)IncreasePitch();
             else ResetPitch(false);
+            //------------------------------------------------------------------------------------------
+            
 
             //-----------------------------------AUDIO SETTINGS-----------------------------------------
             source.clip = audioObject.AudioClip;
             source.pitch = isIncrementing ? 1 + ((IncrementalPitchCounter) * pitchAmount) : 1;
             source.volume = audioObject.Volume;
             //------------------------------------------------------------------------------------------
-
             
             //Play audio
             source.Play();
@@ -189,15 +98,7 @@ namespace Project._Scripts.Library.Audio.Manager
         /// </summary>
         /// <param name="audioName"></param>
         /// <returns></returns>
-        public AudioData GetAudioByName(string audioName)
-        {
-            return _audioDatas.Find(x => x.name == audioName);
-        }
-
-        public AudioData GetAudioDataByClip(AudioClip clip)
-        {
-            return _audioDatas.ToList().Find(x => x.AudioClip == clip);
-        }
+        public AudioData GetAudioByName(string audioName) => _audioDatas.Find(x => x.name == audioName);
 
         /// <summary>
         /// Returns the available audio source channel

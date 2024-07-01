@@ -18,6 +18,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     [Inject]
     public void Construct(PoolManager poolManager) => _poolManager = poolManager;
     #endregion
+    
     #region Components
     public static Platform CurrentPlatform;
     public static Transform PreviousPlatform;
@@ -28,8 +29,8 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     
     #region Fields
     private List<Platform> _platforms;
-    private int _platformCount;
-    public static int SnappedPlatformCount;
+    private int _platformCount; //The total platform count
+    public static int SnappedPlatformCount; //Snapped platform count is necessary for combo check
    
     private static bool _isComboActive;
     public static bool IsComboActive
@@ -62,11 +63,14 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     internal void InitializeData() => SPlatformControllerData = PlatformControllerData;
     private void Initialize()
     {
+      //-------------------------------------------PRE INITIALIZATION-------------------------------------------
       _platforms = new List<Platform>();
       IsComboActive = false;
       SnappedPlatformCount = 0;
       ColorEventData.CurrentColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.color;
-     
+      //-------------------------------------------PRE INITIALIZATION-------------------------------------------
+      
+      
       OnPlatformSpawnedHandler += (reset,_) => SpawnPlatform(reset);
 
       OnPlatformKilledHandler += KillPlatform;
@@ -85,25 +89,33 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     #endregion
 
     #region Platform Handling
+    /// <summary>
+    /// Spawns a new platform according the scale of previous platform
+    /// </summary>
+    /// <param name="reset"></param>
+    /// <param name="scale"></param>
     private void SpawnPlatform(bool reset = false, float scale = 0f)
     {
       if (!LevelGenerator.CanGeneratePlatform) return;
 
+      //---------------GENERATING NEW PLATFORM---------------
       Platform platform = NewPlatform(reset, scale);
       platform.RunPlatform();
-      
       platform.SetPlatformColor(reset);
+      //-----------------------------------------------------
 
+      
       PreviousPlatform = transform.GetChild(1);
       CurrentPlatform = platform;
       _platformCount++;
 
-      if (_platformCount > 10)
-      {
-        Platform platformToDestroy = _platforms[0];
-        _poolManager.DestroyPoolObject(platformToDestroy);
-        _platforms.Remove(platformToDestroy);
-      }
+      //---------------POOLING OPTIMIZATION---------------
+      if (_platformCount <= 10)
+        return;
+      Platform platformToDestroy = _platforms[0];
+      _poolManager.DestroyPoolObject(platformToDestroy);
+      _platforms.Remove(platformToDestroy);
+      //---------------------------------------------------
     }
 
     private Platform NewPlatform(bool reset, float scale)
@@ -111,8 +123,10 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       Transform previousPlatformTransform = transform.GetChild(0);
       previousPlatformTransform.TryGetComponent(out Platform previousPlatform);
       
+      //"multiplier" checks if the new platform should spawn from left of the character or from right
       int multiplier = (_platformCount % 2 == 0) ? 1 : -1;
 
+      //----------------------------------GENERATING PLATFORM TRANSFORM PROPERTIES----------------------------------
       Vector3 position = new Vector3(
         multiplier * -6f,
         previousPlatformTransform.position.y,
@@ -128,7 +142,10 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
           PlatformControllerData.PlatformPrefab.transform.localScale.y,
           PlatformControllerData.PlatformPrefab.transform.localScale.z
         );
+      
+      //-----------------------------------------------------------------------------------------------------------
 
+      //---------------------------------------------GENERATING PLATFORM---------------------------------------------
       Platform platform = _poolManager.SpawnFromPool<Platform>("Platform", position, Quaternion.identity);
       platform.transform.parent = transform;
 
@@ -136,10 +153,15 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
       platform.transform.SetSiblingIndex(0);
       
       _platforms.Add(platform);
+      //-------------------------------------------------------------------------------------------------------------
       
       return platform;
     }
     
+    /// <summary>
+    /// Kills the marked platform before the new platform initializes
+    /// </summary>
+    /// <param name="platform"></param>
     internal void KillPlatform(Platform platform) => platform.TransitionTween.Kill();
     #endregion
 
@@ -147,6 +169,7 @@ namespace Project._Scripts.GameCore.PlatformSystem.System
     internal void IncreaseSnappedPlatformCount() => SnappedPlatformCount++;
     internal void CheckSnappedPlatforms(Platform platform)
     {
+      //Check the distance for activating the combo sequence
       if(Mathf.Approximately(platform.transform.localScale.x, PlatformControllerData.PlatformPrefab.transform.localScale.x)) return;
 
       if (SnappedPlatformCount < PlatformControllerData.SnapCombo) return; 

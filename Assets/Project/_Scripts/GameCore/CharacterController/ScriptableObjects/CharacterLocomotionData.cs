@@ -6,6 +6,6 @@ namespace Project._Scripts.GameCore.CharacterController.ScriptableObjects
   public class CharacterLocomotionData : ScriptableObject
   {
     [Range(1f, 10f)] public float MovementSpeed = 2f;
-    [Range(.1f, 5f)] public float TransitionSpeed = 1f;
+    [Range(.025f, .5f)] public float TransitionSpeed = .1f;
   }
 }
